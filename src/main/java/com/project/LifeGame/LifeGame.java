@@ -1,4 +1,4 @@
-package org.example;
+package com.project.LifeGame;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -43,13 +43,21 @@ public class LifeGame extends JPanel implements ActionListener{
     public void draw(Graphics g) {
         // cells
         g.setColor(Color.green);
+        int numNeighbors;
+        int[][] newCells = new int[DIM][DIM];
         for (int y = 0; y < DIM; y++) {
             for (int x = 0; x < DIM; x++) {
-                if (cells[x][y] == 1) {
+                numNeighbors = getActiveNeighbors(x, y);
+                if ((cells[x][y] == 1 && (numNeighbors == 2 || numNeighbors == 3))
+                        || cells[x][y] == 0 && numNeighbors == 3) {
+                    newCells[x][y] = 1;
                     g.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                } else {
+                    newCells[x][y] = 0;
                 }
             }
         }
+        cells = newCells;
 
         // grid lines
         g.setColor(Color.black);
@@ -57,23 +65,6 @@ public class LifeGame extends JPanel implements ActionListener{
             g.drawLine(i*CELL_SIZE, 0, i*CELL_SIZE, BOARD_DIM);
             g.drawLine(0, i*CELL_SIZE, BOARD_DIM, i*CELL_SIZE);
         }
-    }
-
-    public void repopulateCells() {
-        int numNeighbors;
-        int[][] newCells = new int[DIM][DIM];
-        for (int y = 0; y < DIM; y++) {
-            for (int x = 0; x < DIM; x++) {
-                numNeighbors = getActiveNeighbors(x, y);
-                if ((cells[x][y] == 1 && (numNeighbors == 2 || numNeighbors == 3))
-                    || cells[x][y] == 0 && numNeighbors == 3) {
-                    newCells[x][y] = 1;
-                } else {
-                    newCells[x][y] = 0;
-                }
-            }
-        }
-        cells = newCells;
     }
 
     public int getActiveNeighbors(int x, int y) {
@@ -94,7 +85,6 @@ public class LifeGame extends JPanel implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        repopulateCells();
         repaint();
     }
 }

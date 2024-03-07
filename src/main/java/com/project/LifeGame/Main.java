@@ -1,4 +1,4 @@
-package org.example;
+package com.project.LifeGame;
 import javax.swing.*;
 
 public class Main {
