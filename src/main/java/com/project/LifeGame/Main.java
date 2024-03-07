@@ -1,6 +1,14 @@
 package com.project.LifeGame;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+import java.io.FileReader;
 import javax.swing.*;
 
+@SpringBootApplication
 public class Main {
     public static void main(String[] args) {
         int boardDim = 600;
@@ -12,8 +20,15 @@ public class Main {
         frame.setResizable(false);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        LifeGame lifeGame = new LifeGame(boardDim);
-        frame.add(lifeGame);
-        frame.pack();
+        try {
+            JSONParser jsonParser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("/Users/michellepalmieri/Projects/Life/src/main/resources/sample.json"));
+            JSONArray startingCoordinates = (JSONArray) jsonObject.get("coordinates");
+            LifeGame lifeGame = new LifeGame(boardDim, startingCoordinates);
+            frame.add(lifeGame);
+            frame.pack();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

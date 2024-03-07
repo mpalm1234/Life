@@ -1,47 +1,42 @@
 package com.project.LifeGame;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Iterator;
 import javax.swing.*;
-import javax.swing.Timer;
+import org.json.simple.JSONArray;
 
 public class LifeGame extends JPanel implements ActionListener{
     private final int CELL_SIZE = 25;
     private final int BOARD_DIM;
     private final int DIM;
-    int[][] cells;
+    private int[][] cells;
 
-    //game logic
-    Timer gameLoop;
-
-    LifeGame(int boardDim) {
+    LifeGame(int boardDim, JSONArray startingCoordinates) {
         BOARD_DIM = boardDim;
         DIM = BOARD_DIM/CELL_SIZE;
-        this.cells = new int [DIM][DIM];
         setPreferredSize(new Dimension(BOARD_DIM, BOARD_DIM));
         setBackground(Color.white);
 
-        // draw cells
-        // todo: use input from API for what the cells should be
-        cells[5][5] = 1;
-        cells[6][6] = 1;
-        cells[7][6] = 1;
-        cells[5][7] = 1;
-        cells[6][7] = 1;
+        // build initial active cells
+        this.cells = new int [DIM][DIM];
+        Iterator<String> iter = startingCoordinates.iterator();
+        while (iter.hasNext()) {
+            String coordinate = iter.next();
+            List<String> nums = Arrays.asList(coordinate.split(","));
+            cells[Integer.valueOf(nums.get(0))][Integer.valueOf(nums.get(1))] = 1;
+        }
 
-        // define timer
-        gameLoop = new Timer(500, this);
-
-        // begin timer
+        // timer
+        Timer gameLoop = new Timer(500, this);
         gameLoop.start();
     }
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        draw(g);
-    }
 
-    public void draw(Graphics g) {
-        // cells
+        // draw cells
         g.setColor(Color.green);
         int numNeighbors;
         int[][] newCells = new int[DIM][DIM];
@@ -59,7 +54,7 @@ public class LifeGame extends JPanel implements ActionListener{
         }
         cells = newCells;
 
-        // grid lines
+        // draw grid lines
         g.setColor(Color.black);
         for (int i = 0; i < DIM; i++) {
             g.drawLine(i*CELL_SIZE, 0, i*CELL_SIZE, BOARD_DIM);
