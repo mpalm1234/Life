@@ -3,7 +3,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Iterator;
 import javax.swing.*;
 import org.json.simple.JSONArray;
 
@@ -11,35 +10,54 @@ public class LifeGame extends JPanel implements ActionListener{
     private final int CELL_SIZE = 25;
     private final int BOARD_DIM;
     private final int DIM;
+    public int getDIM() {
+        return this.DIM;
+    }
     private int[][] cells;
+    public int[][] getCells() {
+        return this.cells;
+    }
 
     LifeGame(int boardDim, JSONArray startingCoordinates) {
+        // create board
         BOARD_DIM = boardDim;
         DIM = BOARD_DIM/CELL_SIZE;
         setPreferredSize(new Dimension(BOARD_DIM, BOARD_DIM));
         setBackground(Color.white);
 
         // build initial active cells
-        this.cells = new int [DIM][DIM];
-        Iterator<String> iter = startingCoordinates.iterator();
-        while (iter.hasNext()) {
-            String coordinate = iter.next();
-            List<String> nums = Arrays.asList(coordinate.split(","));
-            cells[Integer.valueOf(nums.get(0))][Integer.valueOf(nums.get(1))] = 1;
-        }
+        populateStartingCells(startingCoordinates);
 
         // timer
         Timer gameLoop = new Timer(500, this);
         gameLoop.start();
     }
 
+    public void populateStartingCells(JSONArray startingCoordinates) {
+        cells = new int [DIM][DIM];
+        for (String coordinate : (Iterable<String>) startingCoordinates) {
+            List<String> nums = Arrays.asList(coordinate.split(","));
+            cells[Integer.parseInt(nums.get(0))][Integer.parseInt(nums.get(1))] = 1;
+        }
+    }
+
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // draw cells
+        drawCells(g);
+
+        g.setColor(Color.black);
+        for (int i = 0; i < DIM; i++) {
+            g.drawLine(i*CELL_SIZE, 0, i*CELL_SIZE, BOARD_DIM);
+            g.drawLine(0, i*CELL_SIZE, BOARD_DIM, i*CELL_SIZE);
+        }    }
+
+    public void drawCells(Graphics g) {
         g.setColor(Color.green);
+
         int numNeighbors;
         int[][] newCells = new int[DIM][DIM];
+
         for (int y = 0; y < DIM; y++) {
             for (int x = 0; x < DIM; x++) {
                 numNeighbors = getActiveNeighbors(x, y);
@@ -52,14 +70,8 @@ public class LifeGame extends JPanel implements ActionListener{
                 }
             }
         }
-        cells = newCells;
 
-        // draw grid lines
-        g.setColor(Color.black);
-        for (int i = 0; i < DIM; i++) {
-            g.drawLine(i*CELL_SIZE, 0, i*CELL_SIZE, BOARD_DIM);
-            g.drawLine(0, i*CELL_SIZE, BOARD_DIM, i*CELL_SIZE);
-        }
+        cells = newCells;
     }
 
     public int getActiveNeighbors(int x, int y) {

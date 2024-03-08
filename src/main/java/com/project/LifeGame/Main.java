@@ -22,7 +22,7 @@ public class Main {
 
         try {
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("/Users/michellepalmieri/Projects/Life/src/main/resources/sample.json"));
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("src/main/resources/sample.json"));
             JSONArray startingCoordinates = (JSONArray) jsonObject.get("coordinates");
             LifeGame lifeGame = new LifeGame(boardDim, startingCoordinates);
             frame.add(lifeGame);
@@ -30,5 +30,7 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        SpringApplication.run(Main.class, args);
     }
 }
