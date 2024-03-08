@@ -5,11 +5,11 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.io.FileReader;
 import javax.swing.*;
+import java.io.FileReader;
 
 @SpringBootApplication
-public class Main {
+public class LifeGameApplication {
     public static void main(String[] args) {
         int boardDim = 600;
 
@@ -31,6 +31,6 @@ public class Main {
             e.printStackTrace();
         }
 
-        SpringApplication.run(Main.class, args);
+        SpringApplication.run(LifeGameApplication.class, args);
     }
 }
