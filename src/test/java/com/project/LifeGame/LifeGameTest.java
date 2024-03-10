@@ -32,7 +32,7 @@ public class LifeGameTest {
 
         try {
             JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("src/test/java/resources/sample1.json"));
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("src/test/resources/sample1.json"));
             startingCoordinates = (JSONArray) jsonObject.get("coordinates");
             lifeGame = new LifeGame(boardDim, startingCoordinates);
         } catch (Exception e) {
