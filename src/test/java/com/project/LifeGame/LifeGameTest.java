@@ -77,9 +77,11 @@ public class LifeGameTest {
 
     @Test
     public void getActiveNeighbors_multipleNeighbors() {
+        lifeGame = new LifeGame(BOARD_DIM, startingCoordinates1);
         int x = 5;
         int y = 7;
 
+        lifeGame = new LifeGame(BOARD_DIM, startingCoordinates1);
         assertEquals(2, lifeGame.getActiveNeighbors(x, y));
     }
 
@@ -88,6 +90,7 @@ public class LifeGameTest {
         int x = 1;
         int y = 1;
 
+        lifeGame = new LifeGame(BOARD_DIM, startingCoordinates1);
         assertEquals(0, lifeGame.getActiveNeighbors(x, y));
     }
 

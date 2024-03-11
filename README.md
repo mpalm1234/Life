@@ -6,7 +6,7 @@
 
 ## Running app locally
 * Run the following command from your terminal: `mvn spring-boot:run`
-* Hit the endpoint: `http://localhost:8080/api/life/start`
+* Hit the endpoint: `POST http://localhost:8080/api/life/start`
   * Request body should contain the desired starting coordinates in JSON. Example format:
   ```
   {

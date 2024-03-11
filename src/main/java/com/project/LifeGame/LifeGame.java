@@ -14,7 +14,7 @@ public class LifeGame extends JPanel implements ActionListener{
     public int[][] getCells() {
         return this.cells;
     }
-    private boolean populationDead; // used to skip logic if there aren't any active cells left
+    private boolean populationDead; // purpose is to skip logic if there aren't any active cells left
     public boolean getPopulationDead() {
         return this.populationDead;
     }
