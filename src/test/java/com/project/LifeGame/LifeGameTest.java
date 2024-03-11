@@ -3,6 +3,7 @@ package com.project.LifeGame;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,60 +12,71 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.awt.Graphics;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ExtendWith(MockitoExtension.class)
 public class LifeGameTest {
 
     private LifeGame lifeGame;
+    private JSONArray startingCoordinates1, startingCoordinates2, startingCoordinates3;
+    private int[][] gameBoard;
 
-    private JSONArray startingCoordinates;
+    final int BOARD_DIM = 600;
+    final int DIM = 24;
 
     @Mock
     Graphics gMock;
 
     @BeforeEach
-    void setUp() {
-        int boardDim = 600;
+    void setUp() throws IOException, ParseException {
 
-        try {
-            JSONParser jsonParser = new JSONParser();
-            JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("src/test/resources/sample1.json"));
-            startingCoordinates = (JSONArray) jsonObject.get("coordinates");
-            lifeGame = new LifeGame(boardDim, startingCoordinates);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        // define working starting coordinate examples
+        JSONParser jsonParser = new JSONParser();
+        JSONObject jsonObject = (JSONObject) jsonParser.parse(new FileReader("src/test/resources/sample1.json"));
+        startingCoordinates1 = (JSONArray) jsonObject.get("coordinates");
+        jsonObject = (JSONObject) jsonParser.parse(new FileReader("src/test/resources/sample2.json"));
+        startingCoordinates2 = (JSONArray) jsonObject.get("coordinates");
+        jsonObject = (JSONObject) jsonParser.parse(new FileReader("src/test/resources/sample3.json"));
+        startingCoordinates3 = (JSONArray) jsonObject.get("coordinates");
 
-    }
-
-    @Test
-    public void populateStartingCells_success() {
-        // expected
-        int[][] expected = new int[lifeGame.getDIM()][lifeGame.getDIM()];
-        for (int y = 0; y < lifeGame.getDIM(); y++) {
-            for (int x = 0; x < lifeGame.getDIM(); x++) {
-                expected[0][0] = 0;
+        // start game board with all zeros
+        gameBoard = new int[DIM][DIM];
+        for (int y = 0; y < DIM; y++) {
+            for (int x = 0; x < DIM; x++) {
+                gameBoard[0][0] = 0;
             }
         }
-        expected[5][5] = 1;
-        expected[6][6] = 1;
-        expected[7][6] = 1;
-        expected[5][7] = 1;
-        expected[6][7] = 1;
-
-        // actual
-        lifeGame.populateStartingCells(startingCoordinates);
-
-        // assertion
-        assertTrue(Arrays.deepEquals(expected, lifeGame.getCells()));
     }
 
     @Test
-    public void getActiveNeighbors_successForMultipleNeighbors() {
+    public void populateStartingCells_populationNotDead() {
+        gameBoard[5][5] = 1;
+        gameBoard[6][6] = 1;
+        gameBoard[7][6] = 1;
+        gameBoard[5][7] = 1;
+        gameBoard[6][7] = 1;
+
+        lifeGame = new LifeGame(BOARD_DIM, startingCoordinates1);
+
+        assertTrue(Arrays.deepEquals(gameBoard, lifeGame.getCells()));
+        assertFalse(lifeGame.getPopulationDead());
+    }
+
+    @Test
+    public void populateStartingCells_populationDead() {
+        lifeGame = new LifeGame(BOARD_DIM, startingCoordinates2);
+
+        assertTrue(Arrays.deepEquals(gameBoard, lifeGame.getCells()));
+        assertTrue(lifeGame.getPopulationDead());
+    }
+
+    @Test
+    public void getActiveNeighbors_multipleNeighbors() {
         int x = 5;
         int y = 7;
 
@@ -72,7 +84,7 @@ public class LifeGameTest {
     }
 
     @Test
-    public void getActiveNeighbors_successForZeroNeighbors() {
+    public void getActiveNeighbors_zeroNeighbors() {
         int x = 1;
         int y = 1;
 
@@ -80,25 +92,27 @@ public class LifeGameTest {
     }
 
     @Test
-    public void drawCells_success() {
-        // expected
-        int[][] expected = new int[lifeGame.getDIM()][lifeGame.getDIM()];
-        for (int y = 0; y < lifeGame.getDIM(); y++) {
-            for (int x = 0; x < lifeGame.getDIM(); x++) {
-                expected[0][0] = 0;
-            }
-        }
-        expected[6][5] = 1;
-        expected[7][6] = 1;
-        expected[5][7] = 1;
-        expected[6][7] = 1;
-        expected[7][7] = 1;
+    public void drawCells_populationNotDead() {
+        gameBoard[6][5] = 1;
+        gameBoard[7][6] = 1;
+        gameBoard[5][7] = 1;
+        gameBoard[6][7] = 1;
+        gameBoard[7][7] = 1;
 
-        // actual
+        lifeGame = new LifeGame(BOARD_DIM, startingCoordinates1);
         lifeGame.drawCells(gMock);
 
-        // assertion
-        assertTrue(Arrays.deepEquals(expected, lifeGame.getCells()));
+        assertTrue(Arrays.deepEquals(gameBoard, lifeGame.getCells()));
+        assertFalse(lifeGame.getPopulationDead());
+    }
+
+    @Test
+    public void drawCells_successOneNeighbor() {
+        lifeGame = new LifeGame(BOARD_DIM, startingCoordinates3);
+        lifeGame.drawCells(gMock);
+
+        assertTrue(Arrays.deepEquals(gameBoard, lifeGame.getCells()));
+        assertTrue(lifeGame.getPopulationDead());
     }
 
 }

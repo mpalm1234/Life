@@ -10,12 +10,13 @@ public class LifeGame extends JPanel implements ActionListener{
     private final int CELL_SIZE = 25;
     private final int BOARD_DIM;
     private final int DIM;
-    public int getDIM() {
-        return this.DIM;
-    }
     private int[][] cells;
     public int[][] getCells() {
         return this.cells;
+    }
+    private boolean populationDead; // used to skip logic if there aren't any active cells left
+    public boolean getPopulationDead() {
+        return this.populationDead;
     }
 
     LifeGame(int boardDim, JSONArray startingCoordinates) {
@@ -33,9 +34,12 @@ public class LifeGame extends JPanel implements ActionListener{
         gameLoop.start();
     }
 
+    @SuppressWarnings("unchecked")
     public void populateStartingCells(JSONArray startingCoordinates) {
+        populationDead = true;
         cells = new int [DIM][DIM];
         for (String coordinate : (Iterable<String>) startingCoordinates) {
+            populationDead = false;
             List<String> nums = Arrays.asList(coordinate.split(","));
             cells[Integer.parseInt(nums.get(0))][Integer.parseInt(nums.get(1))] = 1;
         }
@@ -44,25 +48,32 @@ public class LifeGame extends JPanel implements ActionListener{
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        drawCells(g);
+        if (populationDead) {
+            g.setColor(Color.red);
+            g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+            g.drawString("Population died", BOARD_DIM/3, BOARD_DIM/2);
+        } else {
+            drawCells(g);
+        }
 
         g.setColor(Color.black);
         for (int i = 0; i < DIM; i++) {
             g.drawLine(i*CELL_SIZE, 0, i*CELL_SIZE, BOARD_DIM);
             g.drawLine(0, i*CELL_SIZE, BOARD_DIM, i*CELL_SIZE);
-        }    }
+        }
+    }
 
     public void drawCells(Graphics g) {
-        g.setColor(Color.green);
-
-        int numNeighbors;
         int[][] newCells = new int[DIM][DIM];
+        populationDead = true;
 
+        g.setColor(Color.green);
         for (int y = 0; y < DIM; y++) {
             for (int x = 0; x < DIM; x++) {
-                numNeighbors = getActiveNeighbors(x, y);
+                int numNeighbors = getActiveNeighbors(x, y);
                 if ((cells[x][y] == 1 && (numNeighbors == 2 || numNeighbors == 3))
                         || cells[x][y] == 0 && numNeighbors == 3) {
+                    populationDead = false;
                     newCells[x][y] = 1;
                     g.fillRect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
                 } else {

@@ -6,7 +6,7 @@
 
 ## Running app locally
 * Run the following command from your terminal: `mvn spring-boot:run`
-* Hit the endpoint: `http://localhost:8080/api/v1/life/start`
+* Hit the endpoint: `http://localhost:8080/api/life/start`
   * Request body should contain the desired starting coordinates in JSON. Example format:
   ```
   {
@@ -19,6 +19,7 @@
     ]
   }
   ```
+* A window should pop up that produces Conway's Game of Life starting with the coordinates provided in the request 
 
 ## Running unit tests
 * Run the following command from your terminal: `mvn test`
